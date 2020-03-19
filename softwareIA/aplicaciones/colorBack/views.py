@@ -132,7 +132,7 @@ def activarEntrenamiento(lista):
 
     valor = nn.predict(ete)
 
-    if valor > 0.5:
+    if valor > 0:
         valor = 1
     else:
         valor = 0
@@ -146,11 +146,11 @@ def consultIA(request,id,color):
     
 
 
-    listaInfo = [int(esto[0]), int(esto[1]), int(esto[2])]
+    listaInfo = [ ((int(esto[0]))/128)-1 , ((int(esto[1]))/128)-1, ((int(esto[2]))/128)-1]
     print(listaInfo)
     res = activarEntrenamiento(listaInfo)
 
-    if res == 1:
+    if res == 0:
         tipoColor = 'White'
     else:
         tipoColor = 'Black'
