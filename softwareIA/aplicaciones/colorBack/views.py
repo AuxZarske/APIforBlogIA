@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.core import serializers
 from django.http import HttpResponse
+from sklearn.externals import joblib
+from os import remove
 import json
 
 # Create your views here.
@@ -106,63 +108,113 @@ class NeuralNetwork:
         return self.deltas
 
 
-def activarEntrenamiento(lista):
-    nn = NeuralNetwork([3,3,1],activation ='tanh')
-    X = np.array([[-1, -1, -1],   # sin obstaculos
-                [-0.5, -0.5, -0.5],
-                [0.5, 0.5, 0.5],
-                [1, 1, 1]])  # demasiado cerca a izq
+def crearRed(id):
+    error = 0
+    try:
+
+        clf = NeuralNetwork([3,3,1],activation ='tanh')
+        nombre = 'modelo_' + str(id) + '_entrenadeo.pkl'
+        path = 'softwareIA/aplicaciones/colorBack/files/' + nombre
+        joblib.dump(clf, path)
     
-    y = np.array([[0],    # avanzar
-                [0],
-                [1],
-                [1]])  # retroceder
-    nn.fit(X, y, learning_rate=0.03,epochs=15001)
-    
-    
-    #index=0
-    #for e in X:
-    #    print("X:",e,"y:",y[index],"Network:",nn.predict(e))
-    #    index=index+1
+    except:
+        error = 1
 
-    ete = np.array([lista])
-    ete = ete[0]
+    return error
 
-    print("x: ", ete, " tt: ", nn.predict(ete))
+def findPath(idRed):
 
-    valor = nn.predict(ete)
+    nombre = 'modelo_' + str(idRed) + '_entrenadeo.pkl'
+    path = 'softwareIA/aplicaciones/colorBack/files/' + nombre
 
-    if valor > 0:
-        valor = 1
-    else:
-        valor = 0
+    return path
 
-    return valor
+def entrenarRed(idRed, color, texto):
+    try:
+        #buscar ruta 
+        path = findPath(idRed)
 
-def consultIA(request,id,color):
-    print(id)
-    
+        # y obtener la red
+        clf = joblib.load(path)
+
+        #armar lista de color
+        esto = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+        listaInfo =[ ((int(esto[0]))/255) , ((int(esto[1]))/255), ((int(esto[2]))/255)]
+
+        X = np.array([listaInfo])
+
+
+        #armar text color
+        if texto == 'Negro':
+            y = np.array([[1]]) 
+        else:
+            y = np.array([[0]]) 
+
+        
+
+        #entrenar red 
+        clf.fit(X, y, learning_rate=0.03,epochs=15001)
+
+        #mostrar info de entrenamiento
+        index=0
+        for e in X:
+            print("X:",e,"y:",y[index],"Network:",clf.predict(e))
+            index=index+1
+    except:
+        return 1
+
+    return 0
+
+
+def consultRedIA(request,id,color):
+    textColor = consultIA(id,color)
+    data = {
+        'Red': id,
+        'BackgroundColor': color,
+        'TextColor': textColor,
+    }
+    return HttpResponse(json.dumps(data),content_type="aplication/json")
+
+def consultIA(id,color):
+
+    #armar lista y matriz de paso
     esto = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+    listaInfo = [ ((int(esto[0]))/255) , ((int(esto[1]))/255), ((int(esto[2]))/255)] #0-1
     
+    X = np.array([listaInfo])
 
 
-    listaInfo = [ ((int(esto[0]))/128)-1 , ((int(esto[1]))/128)-1, ((int(esto[2]))/128)-1]
-    print(listaInfo)
-    res = activarEntrenamiento(listaInfo)
+    #obtener la red sgun id
+    clf = joblib.load(findPath(id))
 
-    if res == 0:
+    #predict segun la lista en la primera posicion del array
+    print(X[0])
+    res = clf.predict(X[0])
+    print(res)
+
+
+
+    #evaluar resultado
+    res = abs(res)
+    print(res)
+    if res < 0.5:
         tipoColor = 'White'
     else:
         tipoColor = 'Black'
-
-    data = {
-        'id': '334435',
-        'info':listaInfo,
-        'color': tipoColor
-    }
     
-
-    return HttpResponse(json.dumps(data),content_type="application/json")
+    return tipoColor
 
 
    
+def deleteRedIA(request,id): 
+    res = 0
+    try:
+        remove(findPath(id)) #meterle try cath
+    except:
+        res = 1
+
+    data = {
+        'Red': id,
+        'status': res,
+    }
+    return HttpResponse(json.dumps(data),content_type="aplication/json")
