@@ -206,15 +206,11 @@ def consultIA(id,color):
 
 
    
-def deleteRedIA(request,id): 
+def deleteRedIA(id): 
     res = 0
     try:
         remove(findPath(id)) #meterle try cath
     except:
         res = 1
 
-    data = {
-        'Red': id,
-        'status': res,
-    }
-    return HttpResponse(json.dumps(data),content_type="aplication/json")
+    return res

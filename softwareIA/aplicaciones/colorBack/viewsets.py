@@ -6,7 +6,7 @@ from rest_framework import status
 
 from .models import RedColor, ColorInfo
 from .serializer import RedColorSerializer, ColorSerializer
-
+from .views import deleteRedIA
 
 class RedColorViewSet(viewsets.ModelViewSet):
     queryset = RedColor.objects.filter(id = 0)
@@ -19,7 +19,12 @@ class RedColorViewSet(viewsets.ModelViewSet):
             cant = len(list(instance))
             print(instance)
             if cant != 0:
-                self.perform_destroy(instance)
+
+                res = deleteRedIA(self.kwargs['pk'])  #captar error, sino elimina, no borrar base datos
+                if res == 0:
+                    self.perform_destroy(instance)
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
             

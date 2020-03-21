@@ -8,10 +8,9 @@ router.register(r'redColors', RedColorViewSet, basename='color')
 router.register(r'train', ColorViewSet, basename='red')
 
 
-from .views import consultRedIA, deleteRedIA
+from .views import consultRedIA
 urlpatterns = [
     path('consult/<int:id>/<str:color>', consultRedIA, name='consult'),
-    path('delete/<int:id>', deleteRedIA, name='deleteIA'),
 ]
 
 urlpatterns += router.urls
