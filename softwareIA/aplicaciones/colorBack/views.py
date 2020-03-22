@@ -154,7 +154,7 @@ def entrenarRed(idRed, color, texto):
 
         #entrenar red 
         clf.fit(X, y, learning_rate=0.03,epochs=15001)
-
+        joblib.dump(clf, path)
         #mostrar info de entrenamiento
         index=0
         for e in X:

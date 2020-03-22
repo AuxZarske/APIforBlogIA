@@ -39,7 +39,8 @@ class RedColorSerializer(serializers.ModelSerializer):
         resp = crearRed(num) 
         if resp != 0:
             instance.delete()
-
-        return instance
+            raise serializers.validationError("Error")
+        else:
+            return instance 
 
 
