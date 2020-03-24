@@ -45,9 +45,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'softwareIA.aplicaciones.baseSistema',
     'softwareIA.aplicaciones.colorBack',
+    'softwareIA.aplicaciones.usersManage',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 ]
+
+#APPEND_SLASH=False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

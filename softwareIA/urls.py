@@ -15,9 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.authtoken import views
+from softwareIA.aplicaciones.usersManage.views import Login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1.0/',include('softwareIA.aplicaciones.baseSistema.urls')),
     path('api/v1.0/compColorBack/',include('softwareIA.aplicaciones.colorBack.urls')),
+    path('api/v1.0/users/',include(('softwareIA.aplicaciones.usersManage.urls', 'usersApi')) ),
+    path('api_generate_token/', views.obtain_auth_token),
+    path('login/',Login.as_view(), name = 'login'),
 ]
