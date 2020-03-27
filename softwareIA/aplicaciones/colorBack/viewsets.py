@@ -3,12 +3,14 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated  # <-- Here
 
 from .models import RedColor, ColorInfo
 from .serializer import RedColorSerializer, ColorSerializer
 from .views import deleteRedIA
 
 class RedColorViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)             # <-- And here
     queryset = RedColor.objects.filter(id = 0)
     serializer_class = RedColorSerializer 
 
@@ -35,6 +37,7 @@ class RedColorViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ColorViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)             # <-- And here
     serializer_class = ColorSerializer 
     #queryset = ColorInfo.objects.all()
     def get_queryset(self):

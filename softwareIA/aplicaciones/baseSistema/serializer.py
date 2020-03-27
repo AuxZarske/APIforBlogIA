@@ -1,7 +1,9 @@
 from .models import TipoIA
 from rest_framework import serializers
 
+
 class TipoIASerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = TipoIA
         fields = '__all__' 
