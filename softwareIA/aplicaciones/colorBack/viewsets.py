@@ -8,11 +8,34 @@ from rest_framework.permissions import IsAuthenticated  # <-- Here
 from .models import RedColor, ColorInfo
 from .serializer import RedColorSerializer, ColorSerializer
 from .views import deleteRedIA
+from softwareIA.aplicaciones.baseSistema.permission import IsAdminUser, NoHaveCompPerm
+from softwareIA.aplicaciones.baseSistema.models import AppDjango
+from softwareIA.aplicaciones.baseSistema.views import numRol
 
 class RedColorViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)             # <-- And here
     queryset = RedColor.objects.filter(id = 0)
     serializer_class = RedColorSerializer 
+
+    def get_permissions(self): 
+        permission_classes = []
+        rolUser = self.request.user.groups
+        nameApp = self.__module__.split('.')
+        nameApp = str(nameApp[2])
+        rolApp = list(AppDjango.objects.filter(nombreApp = nameApp))
+        if len(rolApp) != 0: 
+            numRolApp = numRol(rolApp[0].rol)
+            numRolUser = numRol(rolUser) 
+            if numRolApp <= numRolUser:
+                pass # no se imponen restricciones de uso, permiso aceptado
+            else:
+                permission_classes = [NoHaveCompPerm]
+        else:
+            permission_classes = [NoHaveCompPerm]
+
+        return [permission() for permission in permission_classes]
+
+
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -44,5 +67,22 @@ class ColorViewSet(viewsets.ModelViewSet):
         idRed = self.request.query_params.get('red', None)
         return ColorInfo.objects.filter(red = idRed)
     
-        
+    
+    def get_permissions(self): 
+        permission_classes = []
+        rolUser = self.request.user.groups
+        nameApp = self.__module__.split('.')
+        nameApp = str(nameApp[2])
+        rolApp = list(AppDjango.objects.filter(nombreApp = nameApp))
+        if len(rolApp) != 0: 
+            numRolApp = numRol(rolApp[0].rol)
+            numRolUser = numRol(rolUser) 
+            if numRolApp <= numRolUser:
+                pass # no se imponen restricciones de uso, permiso aceptado
+            else:
+                permission_classes = [NoHaveCompPerm]
+        else:
+            permission_classes = [NoHaveCompPerm]
+
+        return [permission() for permission in permission_classes]
     

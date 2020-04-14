@@ -78,13 +78,19 @@ class LoginView(GenericAPIView):
                 'user': self.user,
                 'token': self.token
             }
-            serializer = serializer_class(instance=data,
-                                          context={'request': self.request})
+            serializer = serializer_class(instance=data, context={'request': self.request})
         else:
-            serializer = serializer_class(instance=self.token,
-                                          context={'request': self.request})
-
-        response = Response(serializer.data, status=status.HTTP_200_OK)
+            
+            serializer = serializer_class(instance=self.token, context={'request': self.request})
+        from django.http import HttpResponse
+        import json
+        tipoRol = str(self.user.groups)
+        ttt = str(self.token)
+        dataDic = {
+            'userRol': tipoRol,
+            'data': ttt
+        }
+        response = HttpResponse(json.dumps(dataDic), content_type="aplication/json")
         if getattr(settings, 'REST_USE_JWT', False):
             from rest_framework_jwt.settings import api_settings as jwt_settings
             if jwt_settings.JWT_AUTH_COOKIE:
@@ -94,6 +100,7 @@ class LoginView(GenericAPIView):
                                     self.token,
                                     expires=expiration,
                                     httponly=True)
+        
         return response
 
     def post(self, request, *args, **kwargs):
@@ -103,6 +110,7 @@ class LoginView(GenericAPIView):
         self.serializer.is_valid(raise_exception=True)
 
         self.login()
+        
         return self.get_response()
 
 

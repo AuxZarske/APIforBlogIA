@@ -13,3 +13,16 @@ class TipoIA(models.Model):
     #tags, 
     # secciones(image or text or video)
 
+class AppDjango(models.Model):
+    id = models.AutoField(primary_key = True)
+    nombreApp = models.CharField(max_length = 60)
+    rol = models.CharField(max_length = 30)
+
+
+
+
+from django.contrib.auth.models import AbstractUser, Group
+
+
+class User(AbstractUser):
+    groups = models.ForeignKey(Group, default=3, on_delete=models.CASCADE)

@@ -36,7 +36,11 @@ CORS_ORIGIN_WHITELIST = [
 'http://localhost:8080'
 ]
 
+
+AUTH_USER_MODEL = 'baseSistema.User'  # add this line
+
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,16 +50,19 @@ INSTALLED_APPS = [
     'softwareIA.aplicaciones.baseSistema',
     'softwareIA.aplicaciones.colorBack',
     'softwareIA.aplicaciones.rest_auth',
+    'softwareIA.aplicaciones.rest_auth.registration',
+    
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'softwareIA.aplicaciones.rest_auth.registration',
+    
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
 ]
+
 
 #APPEND_SLASH=False
 
@@ -102,8 +109,12 @@ WSGI_APPLICATION = 'softwareIA.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'nuevo11',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': 1234,
     }
 }
 
